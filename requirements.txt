@@ -1,0 +1,5 @@
+streamlit
+streamlit-drawable-canvas
+numpy
+tensorflow-cpu
+scikit-image
