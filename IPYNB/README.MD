@@ -1,0 +1,6 @@
+HOMEWORK 8 - EMNIST.IPYNB 手寫英文字母辨識 (TensorFlow)
+HOMEWORK 8 - MNIST.IPYNB  手寫阿拉伯數字辨識 (TensorFlow)
+HOMEWORK 8 - FashionMNIST.IPYNB  女士飾品套裝辨識 (TensorFlow)
+Class 8 bc_classification.ipynb 乳癌預測 (Scikit learn Toy Datasets)
+Class 8 iris_classification.ipynb 鳶尾花品種預測 (Scikit learn Toy Datasets)
+Class 8 linear_regression_boston.ipynb 波士頓房價預測 (Scikit learn Toy Datasets)
