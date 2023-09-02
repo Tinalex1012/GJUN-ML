@@ -70,7 +70,7 @@ with col1:
     ##### 操作方式:
         1 寫下聯立方程式
         2 按下結果按鈕
-    ##### 辨識類別(Class):
+    ##### 輸出(Output):
         - 求解聯立方程式
         ''')
     st.markdown(data_url_5, unsafe_allow_html=True)    
