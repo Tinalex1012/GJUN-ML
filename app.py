@@ -27,6 +27,7 @@ data_url = get_image_html("手寫字母", "./Hand_lettets.jpg")
 data_url_2 = get_image_html("手寫數字", "./hand_numbers.jpg")
 data_url_3 = get_image_html("分類", "./penguins.jpg")
 data_url_4 = get_image_html("迴歸", "./taxi.png")
+data_url_5 = get_image_html("聯立方程式", "./Function.jpg")
 
 st.set_page_config(
     page_title="我的學習歷程",
@@ -51,6 +52,7 @@ with col1:
         - 小寫英文字母 a - z
         ''')
     st.markdown(data_url, unsafe_allow_html=True)
+
     st.markdown('### [(CNN)手寫阿拉伯數字](手寫數字)')
     st.markdown('''
     ##### 操作方式:
@@ -62,6 +64,17 @@ with col1:
         - 阿拉伯數字 0 - 9
         ''')
     st.markdown(data_url_2, unsafe_allow_html=True)    
+
+    st.markdown('### [(作業)解聯立方程式](聯立方程式)')
+    st.markdown('''
+    ##### 操作方式:
+        1 寫下聯立方程式
+        2 按下結果按鈕
+    ##### 辨識類別(Class):
+        - 求解聯立方程式
+        ''')
+    st.markdown(data_url_5, unsafe_allow_html=True)    
+
 with col2:
     # url must be external url instead of local file
     # st.markdown(f"### [![分類]({url})](分類)")
