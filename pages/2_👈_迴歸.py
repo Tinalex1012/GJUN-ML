@@ -5,8 +5,8 @@ import numpy as np
 import joblib
 
 # load model
-clf2 = joblib.load('tips.joblib')
-scaler = joblib.load('tips_scaler.joblib')
+clf2 = joblib.load('./MODEL/tips.joblib')
+scaler = joblib.load('./MODEL/tips_scaler.joblib')
 
 sex_dict = {'Female':0, 'Male':1}
 smoker_dict = {'No':0, 'Yes':1}
@@ -14,11 +14,11 @@ day_dict = {'Sun':4, 'Sat':3, 'Fri':2, 'Thur':1}
 time_dict = {'Dinner':0, 'Lunch':1}
 
 # 畫面設計
-st.markdown('# 計程車小費預測系統')
+st.markdown('# 小費預測系統')
 col1, col2 = st.columns(2)
 
 with col1:
-    total_bill = st.slider('車費', 0, 50, 10)
+    total_bill = st.slider('消費額', 0, 50, 10)
     sex = st.radio('性別', sex_dict.keys())
     smoker = st.radio('吸菸', smoker_dict.keys())
 with col2:

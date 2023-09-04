@@ -5,4 +5,6 @@ tensorflow-cpu
 scikit-image
 pandas
 scikit-learn
-sympy
+matplotlib
+datetime
+seaborn
