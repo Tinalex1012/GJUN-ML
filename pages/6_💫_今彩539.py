@@ -13,15 +13,6 @@ import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def show_ball_count(df):
-    df_ball=pd.DataFrame(np.array(df).ravel().astype(np.uint8),columns = ['Ball'])
-    fig,ax = plt.subplots(figsize=(12,6), dpi=80)
-    ax.set_title(f"近100期落球號碼統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
-    sns.countplot( x='Ball', data=df_ball)
-    for p in ax.patches:
-        ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=8)
-    st.pyplot(fig)
-
 def number_formula(df):
     cnt1 = np.zeros([5,40,40]).astype(np.uint8)
     for i in range(df.shape[0]-1):
@@ -86,8 +77,8 @@ df2 = pd.DataFrame(read02[0])
 df2 = df2.loc[2:,1:6]    
 df = pd.concat([df1,df2],ignore_index=True)
 df.columns = ['B1','B2','B3','B4','B5','Date']
-for i in range(1, 6):
-    df['B'+str(i)] = df['B'+str(i)].astype('uint8')
+# for i in range(1, 6):
+#     df['B'+str(i)] = df['B'+str(i)].astype('uint8')
 
 df2 = pd.DataFrame(np.sort(df.iloc[:,:5].values, axis=1))
 df = pd.concat([df.iloc[:,5],df2],axis=1)
