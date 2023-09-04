@@ -12,4 +12,4 @@ sympy
 lxml
 html5lib
 bs4
-opencv
+opencv-python
