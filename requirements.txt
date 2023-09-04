@@ -10,3 +10,4 @@ datetime
 seaborn
 sympy
 lxml
+html5lib
