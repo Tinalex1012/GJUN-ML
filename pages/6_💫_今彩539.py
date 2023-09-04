@@ -77,6 +77,7 @@ df2 = pd.DataFrame(read02[0])
 df2 = df2.loc[2:,1:6]    
 df = pd.concat([df1,df2],ignore_index=True)
 df.columns = ['B1','B2','B3','B4','B5','Date']
+
 # for i in range(1, 6):
 #     df['B'+str(i)] = df['B'+str(i)].astype('uint8')
 
@@ -86,6 +87,7 @@ df['Date'] = pd.to_datetime(df['Date'])
 df['Date'] = df['Date'].apply(lambda x: x.strftime('%Y-%m-%d'))
 df.set_index('Date',inplace=True)
 df.columns = ['B1','B2','B3','B4','B5']
+df = df.astype(np.uint8)
 i = 100
 df_new = df.iloc[-i:,:]
 df_new = df_new.reset_index(drop=True)
