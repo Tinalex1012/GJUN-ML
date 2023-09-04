@@ -109,7 +109,15 @@ with col2:
         st.write(f"開獎號碼:暫無")
 
 
-show_ball_count(df_new)
+# show_ball_count(df_new)
+df_ball=pd.DataFrame(np.array(df_new).ravel().astype(np.uint8),columns = ['Ball'])
+fig,ax = plt.subplots(figsize=(12,6), dpi=80)
+ax.set_title(f"近100期落球號碼統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
+sns.countplot( x='Ball', data=df_ball)
+for p in ax.patches:
+    ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=8)
+st.pyplot(fig)
+
 if st.button('預測下期號碼'):
     batch_items = 30
     start_number = 0
