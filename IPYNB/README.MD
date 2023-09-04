@@ -6,6 +6,8 @@ HOMEWORK 04 - class4.ipynb 梯度下降法(Sympy)
 
 HOMEWORK 05 - class5.ipynb 資料探索與分析(EDA)
 
+HOMEWORK 06 - class6.ipynb 今彩539機率計算(排列與組合)
+
 HOMEWORK 08 - EMNIST.IPYNB 手寫英文字母辨識 (TensorFlow)
 
 HOMEWORK 08 - MNIST.IPYNB  手寫阿拉伯數字辨識 (TensorFlow)
