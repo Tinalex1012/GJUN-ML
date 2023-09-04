@@ -13,19 +13,6 @@ import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def download_data():
-    today = datetime.datetime.today().strftime('%Y')
-    read01 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1912)}')
-    read02 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1911)}')
-    df1 = pd.DataFrame(read01[0])
-    df1 = df1.loc[2:,1:6]
-    df2 = pd.DataFrame(read02[0])
-    df2 = df2.loc[2:,1:6]    
-    df = pd.concat([df1,df2],ignore_index=True)
-    df.columns = ['B1','B2','B3','B4','B5','Date']
-    for i in range(1, 6):
-        df['B'+str(i)] = df['B'+str(i)].astype('uint8')
-    return df
 def show_ball_count(df):
     df_ball=pd.DataFrame(np.array(df).ravel().astype(np.uint8),columns = ['Ball'])
     fig,ax = plt.subplots(figsize=(12,6), dpi=80)
@@ -88,7 +75,20 @@ def number_formula(df):
     st.pyplot(fig)
 
 st.markdown('# 今彩539落球統計')
-df = download_data()
+# df = download_data()
+
+today = datetime.datetime.today().strftime('%Y')
+read01 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1912)}')
+read02 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1911)}')
+df1 = pd.DataFrame(read01[0])
+df1 = df1.loc[2:,1:6]
+df2 = pd.DataFrame(read02[0])
+df2 = df2.loc[2:,1:6]    
+df = pd.concat([df1,df2],ignore_index=True)
+df.columns = ['B1','B2','B3','B4','B5','Date']
+for i in range(1, 6):
+    df['B'+str(i)] = df['B'+str(i)].astype('uint8')
+
 df2 = pd.DataFrame(np.sort(df.iloc[:,:5].values, axis=1))
 df = pd.concat([df.iloc[:,5],df2],axis=1)
 df['Date'] = pd.to_datetime(df['Date'])
