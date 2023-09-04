@@ -11,4 +11,4 @@ seaborn
 sympy
 lxml
 html5lib
-beautfulsoup4
+bs4
