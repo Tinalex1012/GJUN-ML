@@ -9,9 +9,31 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import datetime
+import datetime,requests
 import matplotlib.pyplot as plt
 import seaborn as sns
+from bs4 import BeautifulSoup
+
+def download_data(year):
+    url= f'http://www.olo.com.tw/histNo/mainT539.php?cp={year}'
+
+    # 送出要求，並取得回應資料
+    response = requests.post(url)
+    # response.status_code
+    soup = BeautifulSoup(response.text)
+    data = []
+    table = soup.find('table')
+    rows = table.find_all('tr')
+    for row in rows:
+        cols = row.find_all('td')
+        cols = [ele.text.strip() for ele in cols]
+        data.append([ele for ele in cols if ele]) # Get rid of empty values
+    data = data[2:-1]
+    columns = ['no','n1', 'n2', 'n3', 'n4', 'n5', 'Date']
+    df = pd.DataFrame(data, columns=columns)
+    df = df.dropna()
+    df.drop('no',axis=1,inplace=  True)
+    return df
 
 def number_formula(df):
     cnt1 = np.zeros([5,40,40]).astype(np.uint8)
@@ -61,36 +83,25 @@ def number_formula(df):
 
     sns.heatmap(det_ball, cmap = 'PuBuGn', annot = True, linewidths = 0.5)
     ax.set_xticklabels(det_ball.columns,fontsize = 8)
-    # ax.set_yticklabels(det_ball.shape[0],fontsize = 8,rotation=0)
     plt.gca().invert_yaxis()
     st.pyplot(fig)
 
 st.markdown('# 今彩539落球統計')
-# df = download_data()
-
 today = datetime.datetime.today().strftime('%Y')
-read01 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1912)}')
-read02 = pd.read_html(f'http://www.olo.com.tw/histNo/mainT539.php?cp={str(int(today)-1911)}')
-df1 = pd.DataFrame(read01[0])
-df1 = df1.loc[2:,1:6]
-df2 = pd.DataFrame(read02[0])
-df2 = df2.loc[2:,1:6]    
+
+df1 = download_data(str(int(today)-1912))
+df2 = download_data(str(int(today)-1911))
 df = pd.concat([df1,df2],ignore_index=True)
-df.columns = ['B1','B2','B3','B4','B5','Date']
-
-# for i in range(1, 6):
-#     df['B'+str(i)] = df['B'+str(i)].astype('uint8')
-
-df2 = pd.DataFrame(np.sort(df.iloc[:,:5].values, axis=1))
-df = pd.concat([df.iloc[:,5],df2],axis=1)
 df['Date'] = pd.to_datetime(df['Date'])
 df['Date'] = df['Date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+
 df.set_index('Date',inplace=True)
 df.columns = ['B1','B2','B3','B4','B5']
 df = df.astype(np.uint8)
 i = 100
 df_new = df.iloc[-i:,:]
 df_new = df_new.reset_index(drop=True)
+
 col1, col2 = st.columns(2) 
 with col1:
     st.dataframe(df)
@@ -98,11 +109,11 @@ with col2:
     d = st.date_input("依日期查詢開獎號",datetime.datetime.today(),format="YYYY-MM-DD")
     if str(d) in df.index:
         st.write(f"開獎號碼:{df.loc[str(d),:].to_list()}")
+        # st.write(f"{df.index} {d}")
     else:
         st.write(f"開獎號碼:暫無")
 
 
-# show_ball_count(df_new)
 df_ball=pd.DataFrame(np.array(df_new).ravel().astype(np.uint8),columns = ['Ball'])
 fig,ax = plt.subplots(figsize=(12,6), dpi=80)
 ax.set_title(f"近100期落球號碼統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
