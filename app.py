@@ -34,6 +34,7 @@ data_url_7_1 = get_image_html("手寫字母", "./image/Hand_lettets.jpg")
 data_url_7_2 = get_image_html("手寫數字", "./image/hand_numbers.jpg")
 data_url_8_1 = get_image_html("圖像辨識", "./image/8_1.jpg")
 data_url_8_2 = get_image_html("圖片辨識", "./image/8_2.png")
+data_url_9 = get_image_html("繪製K線", "./image/HW09.jpg")
 
 st.set_page_config(
     page_title="我的學習歷程",
@@ -202,5 +203,18 @@ with tab_list[5]:
             ''')
         st.markdown(data_url_8_2, unsafe_allow_html=True) 
 
+####################### 作業九 #######################
+with tab_list[6]:
+    st.header("作業九")
+    st.markdown('### [(作業)繪製台股K線](繪製K線)')
+    st.markdown('''
+    ##### 操作方式:
+        1 輸入目標股票代號繪製一年內資料日K或周K
+        2 篩選三大法人買賣超資訊
+    ##### 輸出結果:
+        - 股票K線、KD、MACD 
+        - 三大法人三日內買賣超資訊
+        ''')
+    st.markdown(data_url_9, unsafe_allow_html=True)
 
 
