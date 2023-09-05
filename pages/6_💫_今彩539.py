@@ -84,7 +84,10 @@ def number_formula(df):
     ax.set_xticklabels(det_ball.columns,fontsize = 8)
     plt.gca().invert_yaxis()
     st.pyplot(fig)
-matplotlib.rc('font', family='Microsoft JhengHei')
+    
+plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei'] 
+plt.rcParams['axes.unicode_minus'] = False
+
 st.markdown('# 今彩539落球統計')
 today = datetime.datetime.today().strftime('%Y')
 
@@ -115,7 +118,7 @@ with col2:
 
 df_ball=pd.DataFrame(np.array(df_new).ravel().astype(np.uint8),columns = ['Ball'])
 fig,ax = plt.subplots(figsize=(12,6), dpi=80)
-ax.set_title(f"Number statistics for the past 100{datetime.datetime.today().strftime('%Y-%m-%d')}")
+ax.set_title(f"最近100期落球統計 {datetime.datetime.today().strftime('%Y-%m-%d')}")
 sns.countplot( x='Ball', data=df_ball)
 for p in ax.patches:
     ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=8)
