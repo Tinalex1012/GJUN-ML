@@ -129,9 +129,35 @@ if st.button('法人買賣超'):
     dfS['代號'] = resultS
     dfS['鉅亨網連結'] = dfS['代號'].apply(lambda x:f"https://www.cnyes.com/twstock/{x}")
     st.write(f'連續三日法人買超')
-    st.dataframe(dfB)
+    st.data_editor(
+        dfB,
+        column_config={
+            "鉅亨網連結": st.column_config.LinkColumn(
+                "鉅亨網連結",
+                help="點選連結鉅亨網",
+                validate="^https://[a-z]+\.streamlit\.app$",
+                max_chars=100,
+            )
+        },
+        hide_index=True,
+    )
     st.write(f'連續三日法人賣超')
-    st.dataframe(dfS)
+    st.data_editor(
+        dfS,
+        column_config={
+            "鉅亨網連結": st.column_config.LinkColumn(
+                "鉅亨網連結",
+                help="點選連結鉅亨網",
+                validate="^https://[a-z]+\.streamlit\.app$",
+                max_chars=100,
+            )
+        },
+        hide_index=True,
+    )    
+    # st.write(f'連續三日法人買超')
+    # st.dataframe(dfB)
+    # st.write(f'連續三日法人賣超')
+    # st.dataframe(dfS)
     # body = f'''<html>
     #             <body>
     #             <h4>連續三日法人買超</h4>
