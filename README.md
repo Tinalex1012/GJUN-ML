@@ -23,3 +23,5 @@ Class 07 linear_regression_boston.ipynb 波士頓房價預測 (Scikit learn Toy 
 HOMEWORK 08 - intel-image.IPYNB Intel Image Classification (TensorFlow)
 
 HOMEWORK 08 - FashionMNIST.IPYNB 女士飾品套裝辨識 (TensorFlow)
+
+HOMEWORK 09 - class09.ipynb 台股K線繪圖 (mplfinance/yfinance)
