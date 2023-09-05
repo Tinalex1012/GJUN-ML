@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import datetime,requests
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from bs4 import BeautifulSoup
@@ -85,8 +86,7 @@ def number_formula(df):
     ax.set_xticklabels(det_ball.columns,fontsize = 8)
     plt.gca().invert_yaxis()
     st.pyplot(fig)
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = ['SimHei']
+matplotlib.rc('font', family='Microsoft JhengHei')
 st.markdown('# 今彩539落球統計')
 today = datetime.datetime.today().strftime('%Y')
 
