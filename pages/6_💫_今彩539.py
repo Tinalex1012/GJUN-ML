@@ -85,7 +85,8 @@ def number_formula(df):
     ax.set_xticklabels(det_ball.columns,fontsize = 8)
     plt.gca().invert_yaxis()
     st.pyplot(fig)
-
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['SimHei']
 st.markdown('# 今彩539落球統計')
 today = datetime.datetime.today().strftime('%Y')
 
