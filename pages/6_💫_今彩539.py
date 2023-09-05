@@ -55,7 +55,7 @@ def number_formula(df):
     fig, ax = plt.subplots()
     # ax = plt.subplot(121)   
     ax = fig.gca()
-    ax.set_title(f"Number statistics for the past 30{datetime.datetime.today().strftime('%Y-%m-%d')}")
+    ax.set_title(f"Number statistics for the past 30 {datetime.datetime.today().strftime('%Y-%m-%d')}")
     sns.countplot( x='Ball', data=df_ball)
     for p in ax.patches:
         ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=10)   
@@ -75,7 +75,7 @@ def number_formula(df):
     det_ball.replace(np.nan,0,inplace=True)
     det_ball.astype(np.uint8)
     # ax = plt.subplot(122)   
-    ax.set_title(f"Predict the possible numbers{datetime.datetime.today().strftime('%Y-%m-%d')}")
+    ax.set_title(f"Predict the possible numbers {datetime.datetime.today().strftime('%Y-%m-%d')}")
     ax.set_xlabel("pass number")
     ax.set_ylabel("Predict number")
     plt.yticks(np.arange(0.5,det_ball.shape[0]+0.5),fontsize=8,rotation=90)    
@@ -118,7 +118,7 @@ with col2:
 
 df_ball=pd.DataFrame(np.array(df_new).ravel().astype(np.uint8),columns = ['Ball'])
 fig,ax = plt.subplots(figsize=(12,6), dpi=80)
-ax.set_title(f"最近100期落球統計 {datetime.datetime.today().strftime('%Y-%m-%d')}")
+ax.set_title(f"Number statistics for the past 100 {datetime.datetime.today().strftime('%Y-%m-%d')}")
 sns.countplot( x='Ball', data=df_ball)
 for p in ax.patches:
     ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=8)
