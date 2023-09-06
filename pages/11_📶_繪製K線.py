@@ -80,7 +80,7 @@ with col2:
                 if macd_show:
                     add_plot.append(mpf.make_addplot(df["MACD"],panel= panel_select,color="b"))
                     add_plot.append(mpf.make_addplot(df["Signal line"],panel= panel_select,color="r"))
-                    add_plot.append(mpf.make_addplot(df["Signal line"]-df["MACD"],panel= panel_select,type='bar',width=0.5))
+                    add_plot.append(mpf.make_addplot(df["MACD"]-df["Signal line"],panel= panel_select,type='bar',width=0.5))
                 kwargs = dict(type='candle', volume = True,figsize=(20, 10),title = stock, style=s,addplot=add_plot)
                 fig = mpf.plot(df, **kwargs)
                 st.set_option('deprecation.showPyplotGlobalUse', False)
