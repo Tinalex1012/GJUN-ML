@@ -78,7 +78,7 @@ with col1:
 
 with col2:    
     st.markdown(get_image_html("./image/ship.jpg"), unsafe_allow_html=True)
-    if (list1[12] == 0 or list1[12] == 2):
+    if ((list1[12] == 0 or list1[12] == 2) and list1[2] > 12):
         st.text('預期消費水平')
         list1[3] = spend_class[st.select_slider('客房服務',['消費不起','低消', '一般消費', '高端', '奢華'])]
         list1[4] = spend_class[st.select_slider('自助餐吧',['消費不起','低消', '一般消費', '高端', '奢華'])]
