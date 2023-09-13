@@ -35,7 +35,7 @@ data_url_7_2 = get_image_html("手寫數字", "./image/hand_numbers.jpg")
 data_url_8_1 = get_image_html("圖像辨識", "./image/8_1.jpg")
 data_url_8_2 = get_image_html("圖片辨識", "./image/8_2.png")
 data_url_9 = get_image_html("繪製K線", "./image/HW09.jpg")
-
+data_url_10 = get_image_html("太空鐵達尼", "./image/space.jpg")
 st.set_page_config(
     page_title="我的學習歷程",
     page_icon="✍️",
@@ -217,4 +217,15 @@ with tab_list[6]:
         ''')
     st.markdown(data_url_9, unsafe_allow_html=True)
 
-
+####################### 作業九 #######################
+with tab_list[7]:
+    st.header("作業十")
+    st.markdown('### [(作業)太空鐵達尼](太空鐵達尼)')
+    st.markdown('''
+    ##### 操作方式:
+        1 輸入各項參數
+        2 執行
+    ##### 輸出結果:
+        - 預測行程平安與否 
+        ''')
+    st.markdown(data_url_10, unsafe_allow_html=True)
