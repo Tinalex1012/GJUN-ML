@@ -44,7 +44,7 @@ st.set_page_config(
 st.title('Machine Learning 走起來')   
 link='[Github ](https://github.com/Tinalex1012/GJUN-ML)'
 st.markdown(link,unsafe_allow_html=True)
-
+st.text("指導老師：陳昭明")
 homework_list = ["作業二","作業三","作業四","作業六","作業七","作業八","作業九","作業十"]
 tab_list= st.tabs(homework_list)
 
