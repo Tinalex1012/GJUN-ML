@@ -2,12 +2,25 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import datetime
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import seaborn as sns
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 import statsmodels.api as sm
+
+!wget -O TaipeiSansTCBeta-Regular.ttf https://drive.google.com/uc?id=1eGAsTN1HBpJAkeVM57_C7ccp7hbgSz3_&export=download
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt 
+from matplotlib.font_manager import fontManager
+
+# 改style要在改font之前
+# plt.style.use('seaborn')  
+
+fontManager.addfont('TaipeiSansTCBeta-Regular.ttf')
+mpl.rc('font', family='Taipei Sans TC Beta')
+
 
 def test_stationarity(timeseries):
     rolmean=timeseries.rolling(window=12).mean()
@@ -42,8 +55,8 @@ def test_stationarity(timeseries):
     fig.set_size_inches(12, 6)
 
 st.title("台股股價預測")
-plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
-plt.rcParams['axes.unicode_minus'] = False
+# plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
+# plt.rcParams['axes.unicode_minus'] = False
 
 stock_list = pd.read_excel('./MODEL/stock_list.xlsx')  
 today = datetime.date.today()
