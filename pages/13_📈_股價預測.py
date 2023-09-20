@@ -9,8 +9,6 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 import statsmodels.api as sm
 
-!wget -O TaipeiSansTCBeta-Regular.ttf https://drive.google.com/uc?id=1eGAsTN1HBpJAkeVM57_C7ccp7hbgSz3_&export=download
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt 
 from matplotlib.font_manager import fontManager
@@ -18,7 +16,7 @@ from matplotlib.font_manager import fontManager
 # 改style要在改font之前
 # plt.style.use('seaborn')  
 
-fontManager.addfont('TaipeiSansTCBeta-Regular.ttf')
+fontManager.addfont('./MODEL/design.ttf')
 mpl.rc('font', family='Taipei Sans TC Beta')
 
 
