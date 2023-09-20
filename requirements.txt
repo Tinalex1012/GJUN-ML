@@ -11,6 +11,7 @@ requests
 scikit-image
 scikit-learn
 seaborn
+statsmodels
 streamlit
 streamlit-drawable-canvas
 sympy

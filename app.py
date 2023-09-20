@@ -11,10 +11,10 @@ from skimage import data, color, io
 from skimage.transform import rescale, resize, downscale_local_mean
 from skimage.color import rgb2gray, rgba2rgb
 
-import numpy as np  
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.models import model_from_json
+# import numpy as np  
+# import tensorflow as tf
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.models import model_from_json
 
 
 def get_image_html(page_name, file_name):
@@ -36,16 +36,19 @@ data_url_8_1 = get_image_html("圖像辨識", "./image/8_1.jpg")
 data_url_8_2 = get_image_html("圖片辨識", "./image/8_2.png")
 data_url_9 = get_image_html("繪製K線", "./image/HW09.jpg")
 data_url_10 = get_image_html("太空鐵達尼", "./image/space.jpg")
+data_url_13_1 = get_image_html("預測股價", "./image/HW13_01.jpg")
+data_url_13_2 = get_image_html("預測彩號", "./image/HW13_02.jpg")
+
 st.set_page_config(
     page_title="我的學習歷程",
     page_icon="✍️",
 )
 
 st.title('Machine Learning 走起來')   
-link='[Github ](https://github.com/Tinalex1012/GJUN-ML)'
-st.markdown(link,unsafe_allow_html=True)
-st.text("指導老師：陳昭明")
-homework_list = ["作業二","作業三","作業四","作業六","作業七","作業八","作業九","作業十"]
+# link='[Github ](https://github.com/Tinalex1012/GJUN-ML)'
+# st.markdown(link,unsafe_allow_html=True)
+st.text('指導老師：陳昭明')
+homework_list = ["作業二","作業三","作業四","作業六","作業七","作業八","作業九","作業十","作業十三"]
 tab_list= st.tabs(homework_list)
 
 ####################### 作業二 #######################
@@ -217,7 +220,7 @@ with tab_list[6]:
         ''')
     st.markdown(data_url_9, unsafe_allow_html=True)
 
-####################### 作業九 #######################
+####################### 作業十 #######################
 with tab_list[7]:
     st.header("作業十")
     st.markdown('### [(作業)太空鐵達尼](太空鐵達尼)')
@@ -229,3 +232,28 @@ with tab_list[7]:
         - 預測行程平安與否 
         ''')
     st.markdown(data_url_10, unsafe_allow_html=True)
+
+####################### 作業十三 #######################
+with tab_list[8]:
+    st.header("作業十三")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown('### [(時間序列)股價預測](股價預測)')
+        st.markdown('''
+        ##### 操作方式:
+            1 輸入台股代號
+            2 按下預測按鈕
+        ##### 輸出結果:
+            - 預測未來波段股價線形圖
+            - 相關預測資訊
+            ''')
+        st.markdown(data_url_13_1, unsafe_allow_html=True)
+    with col2:
+        st.markdown('### [(時間序列)今彩539彩號預測](彩號預測)')
+        st.markdown('''
+        ##### 操作方式:
+            1 按下預測按鈕
+        ##### 輸出結果:
+            - 依時間序列獲取預測號碼            
+            ''')
+        st.markdown(data_url_13_2, unsafe_allow_html=True) 
