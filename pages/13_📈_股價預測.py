@@ -17,7 +17,7 @@ from matplotlib.font_manager import fontManager
 # plt.style.use('seaborn')  
 
 fontManager.addfont('./MODEL/design.ttf')
-mpl.rc('font', family='Taipei Sans TC Beta')
+mpl.rc('font', family='timemachine wa')
 
 
 def test_stationarity(timeseries):
