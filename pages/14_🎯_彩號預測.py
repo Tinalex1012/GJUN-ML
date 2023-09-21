@@ -158,7 +158,7 @@ with col2:
         tmp[2] = int(results3.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
         tmp[3] = int(results4.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
         tmp[4] = int(results5.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        st.write(f'預測下期號碼：{tmp}')
+        st.write(f'預測本期號碼：{tmp}')
         pred_out_chk = 1
 
 ball_list = ["彩號一","彩號二","彩號三","彩號四","彩號五"]
