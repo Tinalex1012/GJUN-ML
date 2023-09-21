@@ -166,7 +166,7 @@ if pred_out_chk == 1:
     tab_list= st.tabs(ball_list)
     with tab_list[0]:
         st.markdown('彩號一分析')
-        st.markdown(f'***MSE1 = {MSE1:.2f}***')
+        st.markdown(f'***MSE = {MSE1:.2f}***')
         st.markdown(f'一次差分')
         result = adfuller(df_diff['dB1'])
         st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')
@@ -186,7 +186,7 @@ if pred_out_chk == 1:
         st.text(results1.summary())
     with tab_list[1]:
         st.markdown('彩號二分析')
-        st.markdown(f'***MSE2 = {MSE2:.2f}***')
+        st.markdown(f'***MSE = {MSE2:.2f}***')
         st.markdown(f'一次差分')
         result = adfuller(df_diff['dB2'])
         st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')      
@@ -206,7 +206,7 @@ if pred_out_chk == 1:
         st.text(results2.summary())
     with tab_list[2]:
         st.markdown('彩號三分析')
-        st.markdown(f'***MSE3 = {MSE3:.2f}***')
+        st.markdown(f'***MSE = {MSE3:.2f}***')
         st.markdown(f'一次差分')
         result = adfuller(df_diff['dB3'])
         st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')      
@@ -226,7 +226,7 @@ if pred_out_chk == 1:
         st.text(results3.summary())
     with tab_list[3]:
         st.markdown('彩號四分析')
-        st.markdown(f'***MSE4 = {MSE4:.2f}***')
+        st.markdown(f'***MSE = {MSE4:.2f}***')
         st.markdown(f'一次差分')
         result = adfuller(df_diff['dB4'])
         st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')       
@@ -246,7 +246,7 @@ if pred_out_chk == 1:
         st.text(results4.summary())
     with tab_list[4]:
         st.markdown('彩號五分析')
-        st.markdown(f'***MSE5 = {MSE5:.2f}***')
+        st.markdown(f'***MSE = {MSE5:.2f}***')
         st.markdown(f'一次差分')
         result = adfuller(df_diff['dB5'])
         st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')       
