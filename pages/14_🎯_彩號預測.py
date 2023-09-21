@@ -8,14 +8,20 @@
 
 import streamlit as st
 import pandas as pd
-import numpy as np
+# import numpy as np
 import datetime,requests
-import matplotlib.pyplot as plt
 import seaborn as sns
 from bs4 import BeautifulSoup
+from statsmodels.tsa.seasonal import seasonal_decompose
+import statsmodels.api as sm
+import matplotlib as mpl
+import matplotlib.pyplot as plt 
+from matplotlib.font_manager import fontManager
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.stattools import adfuller
 
 def download_data(year):
-    url= f'http://www.olo.com.tw/histNo/mainT539.php?cp={year}'
+    url= f'http://www.olo.com.tw/histNo/mainT539.php?cp={year}&St1=1'
 
     # 送出要求，並取得回應資料
     response = requests.post(url)
@@ -35,96 +41,226 @@ def download_data(year):
     df.drop('no',axis=1,inplace=  True)
     return df
 
-def number_formula(df):
-    cnt1 = np.zeros([5,40,40]).astype(np.uint8)
-    for i in range(df.shape[0]-1):
-        for j in range(5):
-            for k in range(5):
-                cnt1[0,df.iloc[i,j],(df.iloc[i+1,k])] = cnt1[0,df.iloc[i,j],(df.iloc[i+1,k])]+1
-                if i < df.shape[0]-2:
-                    cnt1[1,df.iloc[i,j],(df.iloc[i+2,k])] = cnt1[1,df.iloc[i,j],(df.iloc[i+2,k])]+1
-                if i < df.shape[0]-3:
-                    cnt1[2,df.iloc[i,j],(df.iloc[i+3,k])] = cnt1[2,df.iloc[i,j],(df.iloc[i+3,k])]+1        
-                if i < df.shape[0]-4:
-                    cnt1[3,df.iloc[i,j],(df.iloc[i+4,k])] = cnt1[3,df.iloc[i,j],(df.iloc[i+4,k])]+1   
-                if i < df.shape[0]-5:
-                    cnt1[4,df.iloc[i,j],(df.iloc[i+5,k])] = cnt1[4,df.iloc[i,j],(df.iloc[i+5,k])]+1                                      
-    cnt1[cnt1<2] = 0
-    df_ball=pd.DataFrame(np.array(df).ravel().astype(np.uint8),columns = ['Ball'])
 
-    plt.figure(figsize=(16,8),constrained_layout=True)
-    fig, ax = plt.subplots()
-    # ax = plt.subplot(121)   
-    ax = fig.gca()
-    ax.set_title(f"最近30期落球統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
-    sns.countplot( x='Ball', data=df_ball)
-    for p in ax.patches:
-        ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=10)   
-    st.pyplot(fig) 
-    fig, ax = plt.subplots()
-    item_list = []
-    det_ball = pd.DataFrame()
-    df_ball1 = pd.DataFrame(cnt1[0,df.iloc[-1,:].to_list(),:].T,columns=df.iloc[-1,:].to_list())
-    df_ball2 = pd.DataFrame(cnt1[1,df.iloc[-2,:].to_list(),:].T,columns=df.iloc[-2,:].to_list())
-    df_ball3 = pd.DataFrame(cnt1[2,df.iloc[-3,:].to_list(),:].T,columns=df.iloc[-3,:].to_list())
-    df_ball4 = pd.DataFrame(cnt1[3,df.iloc[-4,:].to_list(),:].T,columns=df.iloc[-4,:].to_list())
-    df_ball5 = pd.DataFrame(cnt1[4,df.iloc[-5,:].to_list(),:].T,columns=df.iloc[-5,:].to_list())
-    det_ball = pd.concat([df_ball1,df_ball2,df_ball3,df_ball4,df_ball5],axis=1)
-    det_ball.replace(0,None,inplace=True)
-    det_ball.dropna(how='all',axis=0,inplace = True)
-    # det_ball.dropna(how='all',axis=1,inplace = True)
-    det_ball.replace(np.nan,0,inplace=True)
-    det_ball.astype(np.uint8)
-    # ax = plt.subplot(122)   
-    ax.set_title(f"最近5期拖牌預測下期號碼可能統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
-    ax.set_xlabel("落球號")
-    ax.set_ylabel("彩號")
-    plt.yticks(np.arange(0.5,det_ball.shape[0]+0.5),fontsize=8,rotation=90)    
-
-    sns.heatmap(det_ball, cmap = 'PuBuGn', annot = True, linewidths = 0.5)
-    ax.set_xticklabels(det_ball.columns,fontsize = 8)
-    plt.gca().invert_yaxis()
-    st.pyplot(fig)
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 中文字体设置
-plt.rcParams['axes.unicode_minus'] = False
-st.markdown('# 今彩539落球統計')
+fontManager.addfont('./MODEL/design.ttf')
+mpl.rc('font', family='timemachine wa')
+st.header("今彩539 時間序列預測彩號")
+st.markdown('今彩539落球統計')
+pred_out_chk = 0
 today = datetime.datetime.today().strftime('%Y')
 
-df1 = download_data(str(int(today)-1912))
-df2 = download_data(str(int(today)-1911))
-df = pd.concat([df1,df2],ignore_index=True)
-df['Date'] = pd.to_datetime(df['Date'])
-df['Date'] = df['Date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+df1 = download_data(str(int(today)-1914))
+df2 = download_data(str(int(today)-1913))
+df3 = download_data(str(int(today)-1912))
+df4 = download_data(str(int(today)-1911))
 
-df.set_index('Date',inplace=True)
-df.columns = ['B1','B2','B3','B4','B5']
-df = df.astype(np.uint8)
-i = 100
-df_new = df.iloc[-i:,:]
-df_new = df_new.reset_index(drop=True)
+data = pd.concat([df1,df2,df3,df4],ignore_index=True)
+data1 = data.copy()
+data['Date'] = pd.to_datetime(data['Date'])
+data1['Date'] = pd.to_datetime(data1['Date']).dt.strftime('%Y-%m-%d')
+data.set_index('Date',inplace=True)
+data1.set_index('Date',inplace=True)
+data.columns = ['B1','B2','B3','B4','B5']
+data1.columns = ['B1','B2','B3','B4','B5']
+data[['B1','B2','B3','B4','B5']] = data[['B1','B2','B3','B4','B5']].astype('uint8')
 
 col1, col2 = st.columns(2) 
 with col1:
-    st.dataframe(df)
+    st.dataframe(data1[-30:])
 with col2:
     d = st.date_input("依日期查詢開獎號",datetime.datetime.today(),format="YYYY-MM-DD")
-    if str(d) in df.index:
-        st.write(f"開獎號碼:{df.loc[str(d),:].to_list()}")
+    if str(d) in data.index:
+        st.write(f"開獎號碼:{data.loc[str(d),:].to_list()}")
         # st.write(f"{df.index} {d}")
     else:
         st.write(f"開獎號碼:暫無")
+    
+    if st.button('預測下期號碼'):
 
+        df_diff = pd.DataFrame()
+        df_diff['dB1'] = data['B1'] - data['B1'].shift(1)
+        df_diff['dB2'] = data['B2'] - data['B2'].shift(1)
+        df_diff['dB3'] = data['B3'] - data['B3'].shift(1)
+        df_diff['dB4'] = data['B4'] - data['B4'].shift(1)
+        df_diff['dB5'] = data['B5'] - data['B5'].shift(1)
+        # df_diff.dropna(inplace=True)        
+        df_diff['d2B1'] = df_diff['dB1'] - df_diff['dB1'].shift(1)
+        df_diff['d2B2'] = df_diff['dB2'] - df_diff['dB2'].shift(1)
+        df_diff['d2B3'] = df_diff['dB3'] - df_diff['dB3'].shift(1)
+        df_diff['d2B4'] = df_diff['dB4'] - df_diff['dB4'].shift(1)
+        df_diff['d2B5'] = df_diff['dB5'] - df_diff['dB5'].shift(1)        
+        df_diff.dropna(inplace=True)
 
-df_ball=pd.DataFrame(np.array(df_new).ravel().astype(np.uint8),columns = ['Ball'])
-fig,ax = plt.subplots(figsize=(12,6), dpi=80)
-ax.set_title(f"近100期落球號碼統計{datetime.datetime.today().strftime('%Y-%m-%d')}")
-sns.countplot( x='Ball', data=df_ball)
-for p in ax.patches:
-    ax.annotate(f'\n{p.get_height()}', (p.get_x(), p.get_height()), color='black', size=8)
-st.pyplot(fig)
+        date1 = pd.date_range(start=data.index[0], end=data.index[-1])
+        decomp = pd.DataFrame(index=date1)
+        decomp = decomp.join(data)
+        decomp = decomp.fillna(method='ffill')
 
-if st.button('預測下期號碼'):
-    batch_items = 30
-    start_number = 0
-    df_p = df_new.iloc[start_number-batch_items-1:,:]
-    cnt1 = number_formula(df_p)
+        sde = pd.DataFrame()
+        s_dc = seasonal_decompose(decomp['B1'], model='additive')
+        decomp['SDS1'] = s_dc.seasonal
+        sde['SDE1'] = s_dc.resid
+        MSE1 = (sde['SDE1']**2).sum() / sde['SDE1'].shape[0]
+        for _ in range(3,len(decomp)):
+            if (decomp.iloc[_:_+1,5][0] == decomp.iloc[0:1,5][0])&(decomp.iloc[_+1:_+2,5][0] == decomp.iloc[1:2,5][0]) & (decomp.iloc[_+2:_+3,5][0] == decomp.iloc[2:3,5][0]):
+                period_num1 = _
+                break
+        s_dc = seasonal_decompose(decomp['B2'], model='additive')
+        decomp['SDS2'] = s_dc.seasonal
+        sde['SDE2'] = s_dc.resid
+        MSE2 = (sde['SDE2']**2).sum() / sde['SDE2'].shape[0]
+        for _ in range(3,len(decomp)):
+            if (decomp.iloc[_:_+1,6][0] == decomp.iloc[0:1,6][0])&(decomp.iloc[_+1:_+2,6][0] == decomp.iloc[1:2,6][0]) & (decomp.iloc[_+2:_+3,6][0] == decomp.iloc[2:3,6][0]):
+                period_num2 = _
+                break
+        s_dc = seasonal_decompose(decomp['B3'], model='additive')
+        decomp['SDS3'] = s_dc.seasonal
+        sde['SDE3'] = s_dc.resid
+        MSE3 = (sde['SDE3']**2).sum() / sde['SDE3'].shape[0]
+        for _ in range(3,len(decomp)):
+            if (decomp.iloc[_:_+1,7][0] == decomp.iloc[0:1,7][0])&(decomp.iloc[_+1:_+2,7][0] == decomp.iloc[1:2,7][0]) & (decomp.iloc[_+2:_+3,7][0] == decomp.iloc[2:3,7][0]):
+                period_num3 = _
+                break
+        s_dc = seasonal_decompose(decomp['B4'], model='additive')
+        decomp['SDS4'] = s_dc.seasonal
+        sde['SDE4'] = s_dc.resid
+        MSE4 = (sde['SDE4']**2).sum() / sde['SDE4'].shape[0]
+        for _ in range(3,len(decomp)):
+            if (decomp.iloc[_:_+1,8][0] == decomp.iloc[0:1,8][0])&(decomp.iloc[_+1:_+2,8][0] == decomp.iloc[1:2,8][0]) & (decomp.iloc[_+2:_+3,8][0] == decomp.iloc[2:3,8][0]):
+                period_num4 = _
+                break
+        s_dc = seasonal_decompose(decomp['B5'], model='additive')
+        decomp['SDS5'] = s_dc.seasonal
+        sde['SDE5'] = s_dc.resid
+        MSE5 = (sde['SDE5']**2).sum() / sde['SDE5'].shape[0]
+        for _ in range(3,len(decomp)):
+            if (decomp.iloc[_:_+1,9][0] == decomp.iloc[0:1,9][0])&(decomp.iloc[_+1:_+2,9][0] == decomp.iloc[1:2,9][0]) & (decomp.iloc[_+2:_+3,9][0] == decomp.iloc[2:3,9][0]):
+                period_num5 = _
+                break
+
+        df_SARIMAX = data.copy()
+        train=df_SARIMAX[:int(df_SARIMAX.shape[0])]
+        # test=df_SARIMAX[int(df_SARIMAX.shape[0]*0.9):]
+        mod1=sm.tsa.statespace.SARIMAX(train['B1'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+        results1=mod1.fit()
+        mod2=sm.tsa.statespace.SARIMAX(train['B2'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+        results2=mod2.fit()
+        mod3=sm.tsa.statespace.SARIMAX(train['B3'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+        results3=mod3.fit()
+        mod4=sm.tsa.statespace.SARIMAX(train['B4'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+        results4=mod4.fit()
+        mod5=sm.tsa.statespace.SARIMAX(train['B5'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+        results5=mod5.fit()
+
+        tmp = [0 for _ in range(5)]
+        tmp[0] = int(results1.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
+        tmp[1] = int(results2.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
+        tmp[2] = int(results3.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
+        tmp[3] = int(results4.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
+        tmp[4] = int(results5.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
+        st.write(f'預測下期號碼：{tmp}')
+        pred_out_chk = 1
+
+ball_list = ["彩號一","彩號二","彩號三","彩號四","彩號五"]
+if pred_out_chk == 1:
+    tab_list= st.tabs(ball_list)
+    with tab_list[0]:
+        st.markdown('彩號一分析')
+        st.markdown(f'***MSE1 = {MSE1:.2f}***')
+        st.markdown(f'一次差分')
+        result = adfuller(df_diff['dB1'])
+        st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')
+        fig = plot_acf(df_diff['dB1'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['dB1'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        st.markdown(f'二次差分')
+        fig = plot_acf(df_diff['d2B1'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['d2B1'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)        
+        st.text(results1.summary())
+    with tab_list[1]:
+        st.markdown('彩號二分析')
+        st.markdown(f'***MSE2 = {MSE2:.2f}***')
+        st.markdown(f'一次差分')
+        result = adfuller(df_diff['dB2'])
+        st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')      
+        fig = plot_acf(df_diff['dB2'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['dB2'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)        
+        st.markdown(f'二次差分')
+        fig = plot_acf(df_diff['d2B2'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['d2B2'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)                
+        st.text(results2.summary())
+    with tab_list[2]:
+        st.markdown('彩號三分析')
+        st.markdown(f'***MSE3 = {MSE3:.2f}***')
+        st.markdown(f'一次差分')
+        result = adfuller(df_diff['dB3'])
+        st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')      
+        fig = plot_acf(df_diff['dB3'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['dB3'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)        
+        st.markdown(f'二次差分')
+        fig = plot_acf(df_diff['d2B3'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['d2B3'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)                
+        st.text(results3.summary())
+    with tab_list[3]:
+        st.markdown('彩號四分析')
+        st.markdown(f'***MSE4 = {MSE4:.2f}***')
+        st.markdown(f'一次差分')
+        result = adfuller(df_diff['dB4'])
+        st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')       
+        fig = plot_acf(df_diff['dB4'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['dB4'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)        
+        st.markdown(f'二次差分')
+        fig = plot_acf(df_diff['d2B4'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['d2B4'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)                
+        st.text(results4.summary())
+    with tab_list[4]:
+        st.markdown('彩號五分析')
+        st.markdown(f'***MSE5 = {MSE5:.2f}***')
+        st.markdown(f'一次差分')
+        result = adfuller(df_diff['dB5'])
+        st.text(f' ADF: {result[0]:2.2e}\n p-value: {result[1]:2.2e}\n 滯後期數(Lags): {result[2]}\n 資料筆數 {result[3]}')       
+        fig = plot_acf(df_diff['dB5'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['dB5'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)        
+        st.markdown(f'二次差分')
+        fig = plot_acf(df_diff['d2B5'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)
+        fig = plot_pacf(df_diff['d2B5'], lags=20)
+        fig.set_size_inches(10, 3)
+        st.pyplot(fig)                
+        st.text(results5.summary())
