@@ -27,3 +27,5 @@ HOMEWORK 08 - FashionMNIST.IPYNB 女士飾品套裝辨識 (TensorFlow)
 HOMEWORK 09 - class09.ipynb 台股K線繪圖 (mplfinance/yfinance)
 
 HOMEWORK 10 - Spaceship_Titanic.ipynb 太空鐵達尼預測 (Kaggle / Spaceship_Titanic)
+
+HOMEWORK 13 - Timeseries.ipynb 時間序列股價預測 (時間序列)
