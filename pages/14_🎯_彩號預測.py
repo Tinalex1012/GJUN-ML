@@ -75,7 +75,7 @@ with col2:
     else:
         st.write(f"開獎號碼:暫無")
     
-    if st.button('預測下期號碼'):
+    if st.button('預測本期號碼'):
 
         df_diff = pd.DataFrame()
         df_diff['dB1'] = data['B1'] - data['B1'].shift(1)
