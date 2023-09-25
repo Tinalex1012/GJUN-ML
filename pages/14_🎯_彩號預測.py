@@ -154,11 +154,11 @@ for _ in range(30,0,-1):
     tmp4.append(int(results4.predict(start = timestamp, end= timestamp, dynamic= True)))
     tmp5.append(int(results5.predict(start = timestamp, end= timestamp, dynamic= True)))
 test=data1[-30:]
-test['P1']=tmp1
-test['P2']=tmp2
-test['P3']=tmp3
-test['P4']=tmp4
-test['P5']=tmp5
+test['預測一']=tmp1
+test['預測二']=tmp2
+test['預測三']=tmp3
+test['預測四']=tmp4
+test['預測五']=tmp5
 # if st.button('預測本期號碼'):
 tmp = [0 for _ in range(5)]
 timestamp = int(df_SARIMAX.shape[0])
@@ -167,6 +167,7 @@ tmp[1] = int(results2.predict(start = timestamp, end= timestamp, dynamic= True))
 tmp[2] = int(results3.predict(start = timestamp, end= timestamp, dynamic= True))
 tmp[3] = int(results4.predict(start = timestamp, end= timestamp, dynamic= True))
 tmp[4] = int(results5.predict(start = timestamp, end= timestamp, dynamic= True))
+test.columns = ['彩號一','彩號二','彩號三','彩號四','彩號五','預測一','預測二','預測三','預測四','預測五']
 st.dataframe(test)    
 
 pred_out_chk = 1
