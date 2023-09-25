@@ -45,7 +45,7 @@ def download_data(year):
 fontManager.addfont('./MODEL/design.ttf')
 mpl.rc('font', family='timemachine wa')
 st.header("今彩539 時間序列預測彩號")
-st.markdown('今彩539落球統計')
+st.markdown('今彩539實際彩號暨預測統計')
 pred_out_chk = 0
 today = datetime.datetime.today().strftime('%Y')
 
@@ -64,102 +64,119 @@ data.columns = ['B1','B2','B3','B4','B5']
 data1.columns = ['B1','B2','B3','B4','B5']
 data[['B1','B2','B3','B4','B5']] = data[['B1','B2','B3','B4','B5']].astype('uint8')
 
-col1, col2 = st.columns(2) 
-with col1:
-    st.dataframe(data1[-30:])
-with col2:
-    d = st.date_input("依日期查詢開獎號",datetime.datetime.today(),format="YYYY-MM-DD")
-    if str(d) in data.index:
-        st.write(f"開獎號碼:{data.loc[str(d),:].to_list()}")
-        # st.write(f"{df.index} {d}")
-    else:
-        st.write(f"開獎號碼:暫無")
-    
-    if st.button('預測本期號碼'):
+# col1, col2 = st.columns([6, 1]) 
+# with col1:
+df_diff = pd.DataFrame()
+df_diff['dB1'] = data['B1'] - data['B1'].shift(1)
+df_diff['dB2'] = data['B2'] - data['B2'].shift(1)
+df_diff['dB3'] = data['B3'] - data['B3'].shift(1)
+df_diff['dB4'] = data['B4'] - data['B4'].shift(1)
+df_diff['dB5'] = data['B5'] - data['B5'].shift(1)
+# df_diff.dropna(inplace=True)        
+df_diff['d2B1'] = df_diff['dB1'] - df_diff['dB1'].shift(1)
+df_diff['d2B2'] = df_diff['dB2'] - df_diff['dB2'].shift(1)
+df_diff['d2B3'] = df_diff['dB3'] - df_diff['dB3'].shift(1)
+df_diff['d2B4'] = df_diff['dB4'] - df_diff['dB4'].shift(1)
+df_diff['d2B5'] = df_diff['dB5'] - df_diff['dB5'].shift(1)        
+df_diff.dropna(inplace=True)
 
-        df_diff = pd.DataFrame()
-        df_diff['dB1'] = data['B1'] - data['B1'].shift(1)
-        df_diff['dB2'] = data['B2'] - data['B2'].shift(1)
-        df_diff['dB3'] = data['B3'] - data['B3'].shift(1)
-        df_diff['dB4'] = data['B4'] - data['B4'].shift(1)
-        df_diff['dB5'] = data['B5'] - data['B5'].shift(1)
-        # df_diff.dropna(inplace=True)        
-        df_diff['d2B1'] = df_diff['dB1'] - df_diff['dB1'].shift(1)
-        df_diff['d2B2'] = df_diff['dB2'] - df_diff['dB2'].shift(1)
-        df_diff['d2B3'] = df_diff['dB3'] - df_diff['dB3'].shift(1)
-        df_diff['d2B4'] = df_diff['dB4'] - df_diff['dB4'].shift(1)
-        df_diff['d2B5'] = df_diff['dB5'] - df_diff['dB5'].shift(1)        
-        df_diff.dropna(inplace=True)
+date1 = pd.date_range(start=data.index[0], end=data.index[-1])
+decomp = pd.DataFrame(index=date1)
+decomp = decomp.join(data)
+decomp = decomp.fillna(method='ffill')
 
-        date1 = pd.date_range(start=data.index[0], end=data.index[-1])
-        decomp = pd.DataFrame(index=date1)
-        decomp = decomp.join(data)
-        decomp = decomp.fillna(method='ffill')
+sde = pd.DataFrame()
+s_dc = seasonal_decompose(decomp['B1'], model='additive')
+decomp['SDS1'] = s_dc.seasonal
+sde['SDE1'] = s_dc.resid
+MSE1 = (sde['SDE1']**2).sum() / sde['SDE1'].shape[0]
+for _ in range(3,len(decomp)):
+    if (decomp.iloc[_:_+1,5][0] == decomp.iloc[0:1,5][0])&(decomp.iloc[_+1:_+2,5][0] == decomp.iloc[1:2,5][0]) & (decomp.iloc[_+2:_+3,5][0] == decomp.iloc[2:3,5][0]):
+        period_num1 = _
+        break
+s_dc = seasonal_decompose(decomp['B2'], model='additive')
+decomp['SDS2'] = s_dc.seasonal
+sde['SDE2'] = s_dc.resid
+MSE2 = (sde['SDE2']**2).sum() / sde['SDE2'].shape[0]
+for _ in range(3,len(decomp)):
+    if (decomp.iloc[_:_+1,6][0] == decomp.iloc[0:1,6][0])&(decomp.iloc[_+1:_+2,6][0] == decomp.iloc[1:2,6][0]) & (decomp.iloc[_+2:_+3,6][0] == decomp.iloc[2:3,6][0]):
+        period_num2 = _
+        break
+s_dc = seasonal_decompose(decomp['B3'], model='additive')
+decomp['SDS3'] = s_dc.seasonal
+sde['SDE3'] = s_dc.resid
+MSE3 = (sde['SDE3']**2).sum() / sde['SDE3'].shape[0]
+for _ in range(3,len(decomp)):
+    if (decomp.iloc[_:_+1,7][0] == decomp.iloc[0:1,7][0])&(decomp.iloc[_+1:_+2,7][0] == decomp.iloc[1:2,7][0]) & (decomp.iloc[_+2:_+3,7][0] == decomp.iloc[2:3,7][0]):
+        period_num3 = _
+        break
+s_dc = seasonal_decompose(decomp['B4'], model='additive')
+decomp['SDS4'] = s_dc.seasonal
+sde['SDE4'] = s_dc.resid
+MSE4 = (sde['SDE4']**2).sum() / sde['SDE4'].shape[0]
+for _ in range(3,len(decomp)):
+    if (decomp.iloc[_:_+1,8][0] == decomp.iloc[0:1,8][0])&(decomp.iloc[_+1:_+2,8][0] == decomp.iloc[1:2,8][0]) & (decomp.iloc[_+2:_+3,8][0] == decomp.iloc[2:3,8][0]):
+        period_num4 = _
+        break
+s_dc = seasonal_decompose(decomp['B5'], model='additive')
+decomp['SDS5'] = s_dc.seasonal
+sde['SDE5'] = s_dc.resid
+MSE5 = (sde['SDE5']**2).sum() / sde['SDE5'].shape[0]
+for _ in range(3,len(decomp)):
+    if (decomp.iloc[_:_+1,9][0] == decomp.iloc[0:1,9][0])&(decomp.iloc[_+1:_+2,9][0] == decomp.iloc[1:2,9][0]) & (decomp.iloc[_+2:_+3,9][0] == decomp.iloc[2:3,9][0]):
+        period_num5 = _
+        break
 
-        sde = pd.DataFrame()
-        s_dc = seasonal_decompose(decomp['B1'], model='additive')
-        decomp['SDS1'] = s_dc.seasonal
-        sde['SDE1'] = s_dc.resid
-        MSE1 = (sde['SDE1']**2).sum() / sde['SDE1'].shape[0]
-        for _ in range(3,len(decomp)):
-            if (decomp.iloc[_:_+1,5][0] == decomp.iloc[0:1,5][0])&(decomp.iloc[_+1:_+2,5][0] == decomp.iloc[1:2,5][0]) & (decomp.iloc[_+2:_+3,5][0] == decomp.iloc[2:3,5][0]):
-                period_num1 = _
-                break
-        s_dc = seasonal_decompose(decomp['B2'], model='additive')
-        decomp['SDS2'] = s_dc.seasonal
-        sde['SDE2'] = s_dc.resid
-        MSE2 = (sde['SDE2']**2).sum() / sde['SDE2'].shape[0]
-        for _ in range(3,len(decomp)):
-            if (decomp.iloc[_:_+1,6][0] == decomp.iloc[0:1,6][0])&(decomp.iloc[_+1:_+2,6][0] == decomp.iloc[1:2,6][0]) & (decomp.iloc[_+2:_+3,6][0] == decomp.iloc[2:3,6][0]):
-                period_num2 = _
-                break
-        s_dc = seasonal_decompose(decomp['B3'], model='additive')
-        decomp['SDS3'] = s_dc.seasonal
-        sde['SDE3'] = s_dc.resid
-        MSE3 = (sde['SDE3']**2).sum() / sde['SDE3'].shape[0]
-        for _ in range(3,len(decomp)):
-            if (decomp.iloc[_:_+1,7][0] == decomp.iloc[0:1,7][0])&(decomp.iloc[_+1:_+2,7][0] == decomp.iloc[1:2,7][0]) & (decomp.iloc[_+2:_+3,7][0] == decomp.iloc[2:3,7][0]):
-                period_num3 = _
-                break
-        s_dc = seasonal_decompose(decomp['B4'], model='additive')
-        decomp['SDS4'] = s_dc.seasonal
-        sde['SDE4'] = s_dc.resid
-        MSE4 = (sde['SDE4']**2).sum() / sde['SDE4'].shape[0]
-        for _ in range(3,len(decomp)):
-            if (decomp.iloc[_:_+1,8][0] == decomp.iloc[0:1,8][0])&(decomp.iloc[_+1:_+2,8][0] == decomp.iloc[1:2,8][0]) & (decomp.iloc[_+2:_+3,8][0] == decomp.iloc[2:3,8][0]):
-                period_num4 = _
-                break
-        s_dc = seasonal_decompose(decomp['B5'], model='additive')
-        decomp['SDS5'] = s_dc.seasonal
-        sde['SDE5'] = s_dc.resid
-        MSE5 = (sde['SDE5']**2).sum() / sde['SDE5'].shape[0]
-        for _ in range(3,len(decomp)):
-            if (decomp.iloc[_:_+1,9][0] == decomp.iloc[0:1,9][0])&(decomp.iloc[_+1:_+2,9][0] == decomp.iloc[1:2,9][0]) & (decomp.iloc[_+2:_+3,9][0] == decomp.iloc[2:3,9][0]):
-                period_num5 = _
-                break
+df_SARIMAX = data.copy()
+train=df_SARIMAX[:int(df_SARIMAX.shape[0])]
+# test=df_SARIMAX[int(df_SARIMAX.shape[0]*0.9):]
+mod1=sm.tsa.statespace.SARIMAX(train['B1'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num1))
+results1=mod1.fit()
+mod2=sm.tsa.statespace.SARIMAX(train['B2'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num2))
+results2=mod2.fit()
+mod3=sm.tsa.statespace.SARIMAX(train['B3'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+results3=mod3.fit()
+mod4=sm.tsa.statespace.SARIMAX(train['B4'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num4))
+results4=mod4.fit()
+mod5=sm.tsa.statespace.SARIMAX(train['B5'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num5))
+results5=mod5.fit()
 
-        df_SARIMAX = data.copy()
-        train=df_SARIMAX[:int(df_SARIMAX.shape[0])]
-        # test=df_SARIMAX[int(df_SARIMAX.shape[0]*0.9):]
-        mod1=sm.tsa.statespace.SARIMAX(train['B1'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
-        results1=mod1.fit()
-        mod2=sm.tsa.statespace.SARIMAX(train['B2'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
-        results2=mod2.fit()
-        mod3=sm.tsa.statespace.SARIMAX(train['B3'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
-        results3=mod3.fit()
-        mod4=sm.tsa.statespace.SARIMAX(train['B4'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
-        results4=mod4.fit()
-        mod5=sm.tsa.statespace.SARIMAX(train['B5'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
-        results5=mod5.fit()
+tmp1 = []
+tmp2 = []
+tmp3 = []
+tmp4 = []
+tmp5 = []
+for _ in range(30,0,-1):
+    timestamp = int(df_SARIMAX.shape[0]-_)
+    tmp1.append(int(results1.predict(start = timestamp, end= timestamp, dynamic= True)))
+    tmp2.append(int(results2.predict(start = timestamp, end= timestamp, dynamic= True)))
+    tmp3.append(int(results3.predict(start = timestamp, end= timestamp, dynamic= True)))
+    tmp4.append(int(results4.predict(start = timestamp, end= timestamp, dynamic= True)))
+    tmp5.append(int(results5.predict(start = timestamp, end= timestamp, dynamic= True)))
+test=data1[-30:]
+test['P1']=tmp1
+test['P2']=tmp2
+test['P3']=tmp3
+test['P4']=tmp4
+test['P5']=tmp5
+# if st.button('預測本期號碼'):
+tmp = [0 for _ in range(5)]
+timestamp = int(df_SARIMAX.shape[0])
+tmp[0] = int(results1.predict(start = timestamp, end= timestamp, dynamic= True))
+tmp[1] = int(results2.predict(start = timestamp, end= timestamp, dynamic= True))
+tmp[2] = int(results3.predict(start = timestamp, end= timestamp, dynamic= True))
+tmp[3] = int(results4.predict(start = timestamp, end= timestamp, dynamic= True))
+tmp[4] = int(results5.predict(start = timestamp, end= timestamp, dynamic= True))
+st.dataframe(test)    
 
-        tmp = [0 for _ in range(5)]
-        tmp[0] = int(results1.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        tmp[1] = int(results2.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        tmp[2] = int(results3.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        tmp[3] = int(results4.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        tmp[4] = int(results5.predict(start = df_SARIMAX.shape[0], end= df_SARIMAX.shape[0], dynamic= True))
-        st.write(f'預測本期號碼：{tmp}')
-        pred_out_chk = 1
+pred_out_chk = 1
+# with col2:
+d = st.date_input("依日期查詢開獎號",datetime.datetime.today(),format="YYYY-MM-DD")
+if str(d) in data.index:
+    st.write(f"開獎號碼:{data.loc[str(d),:].to_list()}")
+else:
+    st.write(f"開獎號碼:暫無")
+st.write(f'預測下期號碼：{tmp}')
 
 ball_list = ["彩號一","彩號二","彩號三","彩號四","彩號五"]
 if pred_out_chk == 1:
