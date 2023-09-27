@@ -151,15 +151,15 @@ for _ in range(3,len(decomp)):
 df_SARIMAX = data.copy()
 train=df_SARIMAX[:int(df_SARIMAX.shape[0])]
 # test=df_SARIMAX[int(df_SARIMAX.shape[0]*0.9):]
-mod1=sm.tsa.statespace.SARIMAX(train['B1'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num1))
+mod1=sm.tsa.statespace.SARIMAX(train['B1'],trend='n',order=(0,0,1),seasonal_order=(1,1,0,period_num1))
 results1=mod1.fit()
-mod2=sm.tsa.statespace.SARIMAX(train['B2'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num2))
+mod2=sm.tsa.statespace.SARIMAX(train['B2'],trend='n',order=(0,0,1),seasonal_order=(1,1,0,period_num2))
 results2=mod2.fit()
-mod3=sm.tsa.statespace.SARIMAX(train['B3'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num3))
+mod3=sm.tsa.statespace.SARIMAX(train['B3'],trend='n',order=(0,0,1),seasonal_order=(1,1,0,period_num3))
 results3=mod3.fit()
-mod4=sm.tsa.statespace.SARIMAX(train['B4'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num4))
+mod4=sm.tsa.statespace.SARIMAX(train['B4'],trend='n',order=(0,0,1),seasonal_order=(1,1,0,period_num4))
 results4=mod4.fit()
-mod5=sm.tsa.statespace.SARIMAX(train['B5'],trend='n',order=(0,1,1),seasonal_order=(1,1,0,period_num5))
+mod5=sm.tsa.statespace.SARIMAX(train['B5'],trend='n',order=(0,0,1),seasonal_order=(1,1,0,period_num5))
 results5=mod5.fit()
 
 tmp1 = []
